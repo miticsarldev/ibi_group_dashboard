@@ -7,6 +7,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 1234 MD",
     status: "En service",
     position: [12.6392, -8.0029],
+    Vnumber: "AX123456",
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 9012 MD",
     status: "En service",
     position: [12.6501, -8.0072],
+    Vnumber: "AX789012",
   },
   {
     id: 4,
@@ -37,6 +39,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 7890 MD",
     status: "En service",
     position: [12.6532, -7.9867],
+    Vnumber: "CY123456",
   },
   {
     id: 6,
@@ -44,6 +47,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 2468 MD",
     status: "En service",
     position: [12.645, -8.01],
+    Vnumber: "CY789012",
   },
   {
     id: 7,
@@ -59,6 +63,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 8642 MD",
     status: "En service",
     position: [12.66, -8.015],
+    Vnumber: "DZ123456",
   },
   {
     id: 9,
@@ -74,6 +79,7 @@ const vehicles: Vehicle[] = [
     plate: "BA 1593 MD",
     status: "En service",
     position: [12.67, -8.025],
+    Vnumber: "DZ789012",
   },
 ];
 

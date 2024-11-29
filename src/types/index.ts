@@ -5,7 +5,7 @@ export type Vehicle = {
   id: number;
   type: VehicleType;
   plate: string;
-  Vnumber?: string;
+  Vnumber: string;
   status: VehicleStatus;
   position: [number, number];
 };
@@ -22,7 +22,7 @@ export type Driver = {
   licenseNumber: string;
   status: DriverStatus;
   experienceYears: number;
-  rating?: number;
+  rating: number;
   joinedDate: string;
 };
 

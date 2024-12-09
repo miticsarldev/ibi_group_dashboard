@@ -33,7 +33,7 @@ const Map = ({ vehicles }: { vehicles: Vehicle[] }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       {vehicles.map((vehicle) => {
-        const driver = getDriverForVehicle(vehicle.plate);
+        const driver = getDriverForVehicle(vehicle.id);
 
         return (
           <Marker

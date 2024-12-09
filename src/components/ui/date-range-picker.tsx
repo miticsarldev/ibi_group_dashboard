@@ -67,7 +67,10 @@ export function DatePickerWithRange({
             selected={date}
             onSelect={(selectedDate) => {
               setDate(selectedDate);
-              handleSelect(selectedDate);
+              handleSelect({
+                from: selectedDate?.from ?? null,
+                to: selectedDate?.to ?? null,
+              });
             }}
             numberOfMonths={2}
           />

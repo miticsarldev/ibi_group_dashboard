@@ -80,16 +80,6 @@ export function DatePickerWithRange({
             onSelect={handleSelect}
             numberOfMonths={2}
             locale={fr}
-            labels={{
-              caption: "Sélection de la période",
-              open: "Ouvrir",
-              close: "Fermer",
-              action: "Valider",
-              selected: "Sélectionné",
-              today: "Aujourd'hui",
-              next: "Suivant",
-              previous: "Précédent",
-            }}
           />
         </PopoverContent>
       </Popover>

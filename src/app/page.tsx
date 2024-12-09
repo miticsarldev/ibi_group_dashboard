@@ -3,17 +3,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { format } from "date-fns";
 
 import { Car, Bike } from "lucide-react";
-import { vehicles, drivers, allocations, revenueData } from "@/utils/data";
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
+import { vehicles, drivers, allocations } from "@/utils/data";
+// import {
+//   Bar,
+//   BarChart,
+//   ResponsiveContainer,
+//   XAxis,
+//   YAxis,
+//   Tooltip,
+// } from "recharts";
 import VehicleInfoModal from "@/components/VehicleInfoModal";
 import dynamic from "next/dynamic";
 import { getDriverForVehicle } from "@/utils/functions";
@@ -42,7 +43,7 @@ export default function DashboardPage() {
           <CardContent>
             <ScrollArea className="h-[70vh]">
               {vehicles.map((vehicle) => {
-                const driver = getDriverForVehicle(vehicle.plate);
+                const driver = getDriverForVehicle(vehicle.id);
                 return (
                   <div key={vehicle.id} className="mb-4 p-4 border rounded-lg">
                     <div className="flex justify-between items-center mb-1">
@@ -117,10 +118,16 @@ export default function DashboardPage() {
                         </td>
                         <td className="p-2">{allocation.vehicle}</td>
                         <td className="p-2">
-                          {new Date(allocation.startDate).toLocaleDateString()}
+                          {format(
+                            new Date(allocation.startDate),
+                            "dd/MM/yyyy 'à' HH:mm"
+                          )}
                         </td>
                         <td className="p-2">
-                          {new Date(allocation.endDate).toLocaleDateString()}
+                          {format(
+                            new Date(allocation.endDate),
+                            "dd/MM/yyyy 'à' HH:mm"
+                          )}
                         </td>
                         <td className="p-2">
                           <Badge
@@ -144,7 +151,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Revenus Mensuels</CardTitle>
           </CardHeader>
@@ -158,7 +165,7 @@ export default function DashboardPage() {
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

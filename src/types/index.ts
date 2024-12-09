@@ -15,6 +15,7 @@ export type DriverStatus = "Active" | "Inactive" | "Suspension";
 export type Driver = {
   id: number;
   name: string;
+  image?: string;
   email: string;
   phone: string;
   address?: string;
@@ -33,21 +34,11 @@ export type AllocationType = "Mission" | "Transport";
 export type Allocation = {
   id: number;
   driver: number;
-  vehicle: string;
+  vehicle: number;
+  isPaid: boolean;
   startDate: string;
   endDate: string;
   type: AllocationType;
   status: AllocationStatus;
   notes?: string;
-};
-
-export type Route = {
-  id: number;
-  name: string;
-  description: string;
-  start: [number, number];
-  end: [number, number];
-  drivers: Driver[];
-  vehicles: Vehicle[];
-  allocations: Allocation[];
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState } from "react";
@@ -130,6 +131,7 @@ export default function DriversDashboard() {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[100px]">Image</TableHead>
             <TableHead>
               <Button
                 variant="ghost"
@@ -160,24 +162,6 @@ export default function DriversDashboard() {
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort("rating")}
-                className="w-full justify-center"
-              >
-                Rating <ArrowUpDown className="ml-2 h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("status")}
-                className="w-full justify-center"
-              >
-                Status <ArrowUpDown className="ml-2 h-4 w-4" />
-              </Button>
-            </TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
                 onClick={() => handleSort("experienceYears")}
                 className="w-full justify-center"
               >
@@ -201,15 +185,20 @@ export default function DriversDashboard() {
         <TableBody>
           {currentDrivers.map((driver) => (
             <TableRow key={driver.id}>
+              <TableCell className="text-center">
+                <img
+                  src={driver.image ?? "https://via.placeholder.com/150"}
+                  alt={driver.name}
+                  className="w-10 h-10 rounded-full"
+                />
+              </TableCell>
               <TableCell className="text-center">{driver.name}</TableCell>
               <TableCell className="text-center">{driver.phone}</TableCell>
               <TableCell className="text-center">
                 {driver.licenseNumber}
               </TableCell>
-              <TableCell className="text-center">{driver.rating}</TableCell>
-              <TableCell className="text-center">{driver.status}</TableCell>
               <TableCell className="text-center">
-                {driver.experienceYears}
+                {driver.experienceYears} ans
               </TableCell>
               <TableCell className="text-center">
                 {format(new Date(driver.joinedDate), "dd/MM/yyyy 'à' HH:mm")}

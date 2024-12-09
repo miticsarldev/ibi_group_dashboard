@@ -15,6 +15,7 @@ import {
   Car,
   Users,
   Calendar,
+  DollarSignIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,12 +39,17 @@ import {
 
 const mainMenuItems = [
   {
-    label: "Platform",
+    label: "Plateforme",
     items: [
       {
         title: "Dashboard",
         url: "/",
         icon: LayoutDashboard,
+      },
+      {
+        title: "Allocations",
+        url: "/allocations",
+        icon: Calendar,
       },
       {
         title: "Véhicules",
@@ -56,9 +62,9 @@ const mainMenuItems = [
         icon: Users,
       },
       {
-        title: "Allocations",
-        url: "/allocations",
-        icon: Calendar,
+        title: "Revenue",
+        url: "/revenues",
+        icon: DollarSignIcon,
       },
     ],
   },

@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 
 import { Car, Bike } from "lucide-react";
-import { vehicles, drivers, allocations } from "@/utils/data";
+import { vehicles, drivers, allocations, chargingStations } from "@/utils/data";
 // import {
 //   Bar,
 //   BarChart,
@@ -32,7 +32,10 @@ export default function DashboardPage() {
             className="p-0"
             style={{ height: "100%", width: "100%" }}
           >
-            <Map vehicles={vehicles} />
+            <Map
+              vehicles={vehicles}
+              chargingStations={chargingStations ?? []}
+            />
           </CardContent>
         </Card>
 
@@ -132,10 +135,12 @@ export default function DashboardPage() {
                         <td className="p-2">
                           <Badge
                             variant={
-                              allocation.status === "En cours"
+                              allocation.status === "Active"
                                 ? "default"
-                                : allocation.status === "Terminée"
+                                : allocation.status === "Completed"
                                 ? "secondary"
+                                : allocation.status === "Cancelled"
+                                ? "destructive"
                                 : "outline"
                             }
                           >

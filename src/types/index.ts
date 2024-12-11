@@ -8,6 +8,10 @@ export type Vehicle = {
   Vnumber: string;
   status: VehicleStatus;
   position: [number, number];
+  batteryLevel?: number;
+  estimatedRange?: number;
+  lastMaintenanceDate?: string;
+  nextMaintenanceDate?: string;
 };
 
 export type DriverStatus = "Active" | "Inactive" | "Suspension";
@@ -27,7 +31,11 @@ export type Driver = {
   joinedDate: string;
 };
 
-export type AllocationStatus = "En cours" | "Terminée" | "Planifiée";
+export type AllocationStatus =
+  | "Active"
+  | "Completed"
+  | "Scheduled"
+  | "Cancelled";
 
 export type AllocationType = "Mission" | "Transport";
 
@@ -41,4 +49,34 @@ export type Allocation = {
   type: AllocationType;
   status: AllocationStatus;
   notes?: string;
+};
+
+export type MaintenanceRecord = {
+  id: number;
+  vehicle: number;
+  date: string;
+  description: string;
+  cost: number;
+  type: "Routine" | "Repair" | "Inspection";
+};
+
+export type ChargingStation = {
+  id: number;
+  name: string;
+  location: [number, number];
+  availablePlugs: number;
+  totalPlugs: number;
+  pricePerCharge: number;
+  operatingHours?: string;
+};
+
+export type GlobalParameters = {
+  carAmount: string;
+  motorbikeAmount: string;
+  chargingStationRate: string;
+  maintenanceThreshold: string;
+  defaultCurrency: string;
+  language: string;
+  darkMode: boolean;
+  notificationsEnabled: boolean;
 };

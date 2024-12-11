@@ -68,23 +68,6 @@ export default function RevenuePage() {
   const [vehicleType, setVehicleType] = useState<VehicleType | "all">("all");
 
   useEffect(() => {
-    // let filtered = allocations;
-
-    // if (vehicleType !== "all") {
-    //   filtered = filtered.filter((item) => {
-    //     const matchedVehicleType = vehicles.find(
-    //       (vehicle) => vehicle.id === item.vehicle
-    //     )?.type;
-    //     const amount =
-    //       matchedVehicleType === "car"
-    //         ? parameters.carAmount
-    //         : parameters.motorbikeAmount;
-    //     return vehicleType === "car"
-    //       ? amount === parameters.carAmount
-    //       : amount === parameters.motorbikeAmount;
-    //   });
-    // }
-
     let filtered = allocations;
 
     if (vehicleType !== "all") {
@@ -114,8 +97,8 @@ export default function RevenuePage() {
       (item.isPaid
         ? vehicles.find((vehicle) => vehicle.id === item.vehicle)?.type ===
           "car"
-          ? parameters.carAmount
-          : parameters.motorbikeAmount
+          ? Number(parameters.carAmount)
+          : Number(parameters.motorbikeAmount)
         : 0),
     0
   );
@@ -127,8 +110,8 @@ export default function RevenuePage() {
         ? 0
         : vehicles.find((vehicle) => vehicle.id === item.vehicle)?.type ===
           "car"
-        ? parameters.carAmount
-        : parameters.motorbikeAmount),
+        ? Number(parameters.carAmount)
+        : Number(parameters.motorbikeAmount)),
     0
   );
 
@@ -285,9 +268,9 @@ export default function RevenuePage() {
               : parameters.motorbikeAmount;
 
           if (item.isPaid) {
-            acc.revenue += amount;
+            acc.revenue += Number(amount);
           } else {
-            acc.pending += amount;
+            acc.pending += Number(amount);
           }
 
           console.log("Item calculation:", {
@@ -450,8 +433,8 @@ export default function RevenuePage() {
                     {formatNumber(
                       vehicles.find((v) => v.id === item.vehicle)?.type ===
                         "car"
-                        ? parameters.carAmount
-                        : parameters.motorbikeAmount
+                        ? Number(parameters.carAmount)
+                        : Number(parameters.motorbikeAmount)
                     )}{" "}
                     FCFA
                   </TableCell>

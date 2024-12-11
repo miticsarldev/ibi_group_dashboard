@@ -1,11 +1,7 @@
 "use client";
 
+import { GlobalParameters } from "@/types";
 import React, { createContext, useContext, useState, useEffect } from "react";
-
-interface GlobalParameters {
-  carAmount: number;
-  motorbikeAmount: number;
-}
 
 interface GlobalParametersContextType {
   parameters: GlobalParameters;
@@ -22,8 +18,14 @@ export function GlobalParametersProvider({
   children: React.ReactNode;
 }) {
   const [parameters, setParameters] = useState<GlobalParameters>({
-    carAmount: 25000,
-    motorbikeAmount: 4800,
+    carAmount: "25000",
+    motorbikeAmount: "4800",
+    chargingStationRate: "1000",
+    maintenanceThreshold: "5000",
+    defaultCurrency: "FCFA",
+    language: "fr",
+    darkMode: false,
+    notificationsEnabled: true,
   });
 
   useEffect(() => {
@@ -34,8 +36,17 @@ export function GlobalParametersProvider({
   }, []);
 
   const updateParameters = (newParameters: GlobalParameters) => {
-    setParameters(newParameters);
-    localStorage.setItem("globalParameters", JSON.stringify(newParameters));
+    setParameters((prevParameters) => ({
+      ...prevParameters,
+      ...newParameters,
+    }));
+    localStorage.setItem(
+      "globalParameters",
+      JSON.stringify({
+        ...parameters,
+        ...newParameters,
+      })
+    );
   };
 
   return (

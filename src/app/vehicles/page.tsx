@@ -108,7 +108,7 @@ export default function VehiclesDashboard() {
               <Plus className="mr-2 h-4 w-4" /> Ajouter un véhicule
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent className="sm:max-w-[425px] px-4">
             <DialogHeader>
               <DialogTitle>Ajouter un nouveau véhicule</DialogTitle>
               <DialogDescription>
@@ -197,7 +197,7 @@ export default function VehiclesDashboard() {
                       Modifier
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="sm:max-w-[425px] px-4">
                     <DialogHeader>
                       <DialogTitle>Modifier le véhicule</DialogTitle>
                       <DialogDescription>

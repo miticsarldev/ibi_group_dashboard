@@ -16,6 +16,8 @@ import {
   Users,
   Calendar,
   DollarSignIcon,
+  BatteryCharging,
+  Cog,
 } from "lucide-react";
 import {
   Sidebar,
@@ -65,6 +67,16 @@ const mainMenuItems = [
         title: "Revenue",
         url: "/revenues",
         icon: DollarSignIcon,
+      },
+      {
+        title: "Maintenance",
+        url: "/maintenance",
+        icon: Cog,
+      },
+      {
+        title: "Stations de Charge",
+        url: "/charging-stations",
+        icon: BatteryCharging,
       },
     ],
   },

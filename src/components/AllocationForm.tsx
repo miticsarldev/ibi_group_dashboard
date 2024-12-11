@@ -81,7 +81,7 @@ export function AllocationForm({
         ? new Date(allocation.startDate)
         : new Date(),
       endDate: allocation?.endDate ? new Date(allocation.endDate) : new Date(),
-      status: allocation?.status || "En cours",
+      status: allocation?.status || "Active",
       type: allocation?.type || "Transport",
       notes: allocation?.notes || "",
       isPaid: allocation?.isPaid || false,
@@ -316,9 +316,10 @@ export function AllocationForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="En cours">En cours</SelectItem>
-                    <SelectItem value="Terminé">Terminé</SelectItem>
-                    <SelectItem value="Annulé">Annulé</SelectItem>
+                    <SelectItem value="Active">En cours</SelectItem>
+                    <SelectItem value="Completed">Terminé</SelectItem>
+                    <SelectItem value="Scheduled">Planifiée</SelectItem>
+                    <SelectItem value="Cancelled">Terminé</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription>

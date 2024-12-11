@@ -3,25 +3,38 @@
 import React from "react";
 import { Icon } from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Vehicle } from "@/types";
+import { ChargingStation, Vehicle } from "@/types";
 import VehicleInfoModal from "./VehicleInfoModal";
 import { getDriverForVehicle } from "@/utils/functions";
 
 const carIcon = new Icon({
-  iconUrl: "/car-icon.png",
-  iconSize: [24, 40],
+  iconUrl: "/electric-car-reel.gif",
+  iconSize: [32, 32],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
 const bikeIcon = new Icon({
-  iconUrl: "/bike-icon.png",
-  iconSize: [24, 24],
+  iconUrl: "/electric-bike-reel.gif",
+  iconSize: [38, 38],
   iconAnchor: [16, 32],
   popupAnchor: [0, -32],
 });
 
-const Map = ({ vehicles }: { vehicles: Vehicle[] }) => {
+const chargeStationIcon = new Icon({
+  iconUrl: "/electric-charger-reel.gif",
+  iconSize: [48, 48],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
+
+const Map = ({
+  vehicles,
+  chargingStations,
+}: {
+  vehicles: Vehicle[];
+  chargingStations: ChargingStation[];
+}) => {
   return (
     <MapContainer
       center={[12.6392, -8.0029]}
@@ -56,6 +69,23 @@ const Map = ({ vehicles }: { vehicles: Vehicle[] }) => {
           </Marker>
         );
       })}
+      {chargingStations.map((station) => (
+        <Marker
+          key={station.id}
+          position={station.location}
+          icon={chargeStationIcon}
+        >
+          <Popup className="z-[9998]">
+            <div className="text-center space-y-0">
+              <h3 className="font-bold">Station de Chargement</h3>
+              <p>{station.name}</p>
+              <p>Prise(s) de charge: {station.availablePlugs}</p>
+              <p>Temps de travail: {station.operatingHours}</p>
+              <p>Prix de charge: {station.pricePerCharge}</p>
+            </div>
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };

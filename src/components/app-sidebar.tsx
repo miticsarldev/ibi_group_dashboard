@@ -18,6 +18,10 @@ import {
   DollarSignIcon,
   BatteryCharging,
   Cog,
+  Users2,
+  File,
+  ServerCog,
+  UsersIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,10 +42,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useFirebase } from "@/hooks/useFirebase";
 
 const mainMenuItems = [
   {
-    label: "Plateforme",
+    label: "Plateforme: Gestion de Flotte",
     items: [
       {
         title: "Dashboard",
@@ -59,14 +64,19 @@ const mainMenuItems = [
         icon: Car,
       },
       {
-        title: "Conducteurs",
+        title: "Allocateurs",
         url: "/drivers",
         icon: Users,
       },
       {
-        title: "Revenue",
+        title: "Revenue sur Allocations",
         url: "/revenues",
         icon: DollarSignIcon,
+      },
+      {
+        title: "Stations de Charge",
+        url: "/charging-stations",
+        icon: BatteryCharging,
       },
       {
         title: "Maintenance",
@@ -74,9 +84,50 @@ const mainMenuItems = [
         icon: Cog,
       },
       {
-        title: "Stations de Charge",
-        url: "/charging-stations",
-        icon: BatteryCharging,
+        title: "Administrations",
+        url: "/administrations",
+        icon: UsersIcon,
+      },
+    ],
+  },
+  {
+    label: "Plateforme: Transport",
+    items: [
+      {
+        title: "Conduites",
+        url: "/rides",
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Conducteurs",
+        url: "/drivers-taxi",
+        icon: Users2,
+      },
+      {
+        title: "Passagers",
+        url: "/passengers",
+        icon: Users2,
+      },
+
+      {
+        title: "Type de Documents",
+        url: "/document-types",
+        icon: File,
+      },
+      {
+        title: "Documents",
+        url: "/documents",
+        icon: File,
+      },
+      {
+        title: "Services",
+        url: "/services",
+        icon: ServerCog,
+      },
+      {
+        title: "Revenue sur Transport",
+        url: "/revenues",
+        icon: DollarSignIcon,
       },
     ],
   },
@@ -101,7 +152,12 @@ const mainMenuItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { state } = useSidebar();
+  const { user, logOut } = useFirebase();
   const isCollapsed = state === "collapsed";
+
+  const handleLogout = async () => {
+    await logOut();
+  };
 
   return (
     <Sidebar className="border-r" collapsible="icon">
@@ -196,9 +252,11 @@ export function AppSidebar() {
                     </div>
                     {!isCollapsed && (
                       <div className="flex flex-col items-start">
-                        <span className="text-sm">admin</span>
+                        <span className="text-sm">
+                          {user?.name || user?.email?.split("@")[0]}
+                        </span>
                         <span className="text-xs text-zinc-400">
-                          admin@ibi-group.com
+                          {user?.email}
                         </span>
                       </div>
                     )}
@@ -211,7 +269,7 @@ export function AppSidebar() {
                 align="start"
                 alignOffset={11}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Se déconnecter</span>
                 </DropdownMenuItem>

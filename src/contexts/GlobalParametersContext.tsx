@@ -23,6 +23,8 @@ export function GlobalParametersProvider({
     chargingStationRate: "1000",
     maintenanceThreshold: "5000",
     defaultCurrency: "FCFA",
+    estimatedRangeCar: "300",
+    estimatedRangeMotorbike: "150",
     language: "fr",
     darkMode: false,
     notificationsEnabled: true,

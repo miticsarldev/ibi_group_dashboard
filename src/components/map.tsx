@@ -1,93 +1,167 @@
-"use client";
-
 import React from "react";
-import { Icon } from "leaflet";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { ChargingStation, Vehicle } from "@/types";
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Marker,
+  InfoWindow,
+} from "@react-google-maps/api";
+import { Vehicle, ChargingStation, Driver, Allocation } from "@/types";
 import VehicleInfoModal from "./VehicleInfoModal";
-import { getDriverForVehicle } from "@/utils/functions";
+import { getDriverAndVehicle } from "@/utils/functions";
 
-const carIcon = new Icon({
-  iconUrl: "/electric-car-reel.gif",
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
-});
+const containerStyle = {
+  width: "100%",
+  height: "100%",
+};
 
-const bikeIcon = new Icon({
-  iconUrl: "/electric-bike-reel.gif",
-  iconSize: [38, 38],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
-});
+const center = {
+  lat: 12.6392,
+  lng: -8.0025,
+};
 
-const chargeStationIcon = new Icon({
-  iconUrl: "/electric-charger-reel.gif",
-  iconSize: [48, 48],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
-});
-
-const Map = ({
-  vehicles,
-  chargingStations,
-}: {
+interface MapProps {
   vehicles: Vehicle[];
   chargingStations: ChargingStation[];
-}) => {
-  return (
-    <MapContainer
-      center={[12.6392, -8.0029]}
-      zoom={13}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
-      {vehicles.map((vehicle) => {
-        const driver = getDriverForVehicle(vehicle.id);
+  drivers: Driver[];
+  allocations: Allocation[];
+}
 
-        return (
-          <Marker
-            key={vehicle.id}
-            position={vehicle.position}
-            icon={vehicle.type === "car" ? carIcon : bikeIcon}
-          >
-            <Popup className="z-[9998]">
-              <div className="text-center space-y-0">
-                <h3 className="font-bold">{vehicle.plate}</h3>
-                <p>{vehicle.type === "car" ? "Voiture" : "Moto"}</p>
-                <p>Statut: {vehicle.status}</p>
-                <p className="flex flex-col justify-center items-center">
-                  <span>Chauffeur: {driver?.name}</span>
-                  <span>Tel: {driver?.phone}</span>
-                </p>
-                <VehicleInfoModal vehicle={vehicle} driver={driver} />
-              </div>
-            </Popup>
-          </Marker>
-        );
-      })}
+const Map: React.FC<MapProps> = ({
+  vehicles,
+  chargingStations,
+  drivers,
+  allocations,
+}) => {
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  });
+
+  const [selectedVehicle, setSelectedVehicle] = React.useState<Vehicle | null>(
+    null
+  );
+  const [selectedStation, setSelectedStation] =
+    React.useState<ChargingStation | null>(null);
+
+  const onLoad = React.useCallback(
+    (map: google.maps.Map) => {
+      if (!vehicles.length && !chargingStations.length) {
+        map.setCenter(center);
+        map.setZoom(13);
+        return;
+      }
+
+      const bounds = new window.google.maps.LatLngBounds();
+
+      vehicles.forEach((vehicle) =>
+        bounds.extend(
+          new google.maps.LatLng(vehicle.position[0], vehicle.position[1])
+        )
+      );
+
+      chargingStations.forEach((station) =>
+        bounds.extend(
+          new google.maps.LatLng(station.location[0], station.location[1])
+        )
+      );
+
+      map.fitBounds(bounds);
+
+      const listener = google.maps.event.addListenerOnce(map, "idle", () => {
+        if ((map.getZoom() ?? 0) > 16) {
+          map.setZoom(16);
+        }
+      });
+
+      listener.remove();
+    },
+    [vehicles, chargingStations]
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const onUnmount = React.useCallback((map: google.maps.Map) => {
+    // Clean up any listeners or resources
+  }, []);
+
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      zoom={11} // Default zoom (fallback if bounds aren't set)
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+    >
+      {vehicles.map((vehicle) => (
+        <Marker
+          key={vehicle.id}
+          position={{ lat: vehicle.position[0], lng: vehicle.position[1] }}
+          icon={{
+            url:
+              vehicle.type === "car"
+                ? "/electric-car-reel.gif"
+                : "/electric-bike-reel.gif",
+            scaledSize: new window.google.maps.Size(32, 32),
+          }}
+          onClick={() => setSelectedVehicle(vehicle)}
+        />
+      ))}
+
       {chargingStations.map((station) => (
         <Marker
           key={station.id}
-          position={station.location}
-          icon={chargeStationIcon}
-        >
-          <Popup className="z-[9998]">
-            <div className="text-center space-y-0">
-              <h3 className="font-bold">Station de Chargement</h3>
-              <p>{station.name}</p>
-              <p>Prise(s) de charge: {station.availablePlugs}</p>
-              <p>Temps de travail: {station.operatingHours}</p>
-              <p>Prix de charge: {station.pricePerCharge}</p>
-            </div>
-          </Popup>
-        </Marker>
+          position={{ lat: station.location[0], lng: station.location[1] }}
+          icon={{
+            url: "/electric-charger-reel.gif",
+            scaledSize: new window.google.maps.Size(48, 48),
+          }}
+          onClick={() => setSelectedStation(station)}
+        />
       ))}
-    </MapContainer>
+
+      {selectedVehicle && (
+        <InfoWindow
+          position={{
+            lat: selectedVehicle.position[0],
+            lng: selectedVehicle.position[1],
+          }}
+          onCloseClick={() => setSelectedVehicle(null)}
+        >
+          <div>
+            <h3>{selectedVehicle.plate}</h3>
+            <p>{selectedVehicle.type === "car" ? "Voiture" : "Moto"}</p>
+            <p>Statut: {selectedVehicle.status}</p>
+            <VehicleInfoModal
+              {...getDriverAndVehicle(
+                drivers,
+                vehicles,
+                allocations,
+                selectedVehicle.id
+              )}
+            />
+          </div>
+        </InfoWindow>
+      )}
+
+      {selectedStation && (
+        <InfoWindow
+          position={{
+            lat: selectedStation.location[0],
+            lng: selectedStation.location[1],
+          }}
+          onCloseClick={() => setSelectedStation(null)}
+        >
+          <div>
+            <h3>Station de Chargement</h3>
+            <p>{selectedStation.name}</p>
+            <p>Prise(s) de charge: {selectedStation.availablePlugs}</p>
+            <p>Temps de travail: {selectedStation.operatingHours}</p>
+            <p>Prix de charge: {selectedStation.pricePerCharge}</p>
+          </div>
+        </InfoWindow>
+      )}
+    </GoogleMap>
+  ) : (
+    <></>
   );
 };
 
-export default Map;
+export default React.memo(Map);

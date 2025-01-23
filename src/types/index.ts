@@ -93,24 +93,6 @@ export type GlobalParameters = {
   notificationsEnabled: boolean;
 };
 
-export type RideStatus = "Pending" | "Ongoing" | "Completed" | "Cancelled";
-
-export type Ride = {
-  id: string;
-  passenger: string;
-  driver: string;
-  vehicle: string;
-  startLocation: [number, number];
-  endLocation: [number, number];
-  fare: number;
-  distance: number;
-  startTime: Timestamp;
-  endTime?: Timestamp;
-  status: RideStatus;
-  paymentMethod: "Card" | "Cash" | "Wallet";
-  rating?: number;
-};
-
 export type Passenger = {
   id: string;
   name: string;
@@ -190,4 +172,120 @@ export type Document = {
   isVerified: boolean;
   uploadDate: Timestamp;
   notes: string;
+};
+
+export type TaxiUserType = "client" | "driver";
+
+export type TaxiUserGender = "male" | "female";
+
+export type TaxiDriverStatus = "Active" | "Inactive" | "Suspension";
+
+export interface TaxiUser {
+  id?: string;
+  email: string;
+  displayName: string;
+  phoneNumber: string;
+  password?: string;
+  image?: string;
+  userType?: TaxiUserType;
+  gender?: TaxiUserGender | "";
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+export type Coordinates = {
+  latitude: number;
+  longitude: number;
+  address: string;
+};
+
+export type PaymentMethod = {
+  type: "card" | "cash" | "mobile_money";
+  details: {
+    // Common details
+    provider?: string; // e.g., Visa, MasterCard, MTN Mobile Money
+    lastFourDigits?: string; // For card and mobile money
+
+    // Card-specific details
+    cardHolderName?: string;
+    cardNumber?: string; // Encrypted or tokenized card number
+    expiryDate?: string; // e.g., MM/YY
+    cvv?: string; // Encrypted CVV for card validation
+
+    // Mobile money-specific details
+    phoneNumber?: string; // Linked mobile number
+
+    // Cash-specific details
+    notes: string; // Optional notes, e.g., "Exact cash preferred"
+  };
+  addedAt: Timestamp; // When the payment method was added
+  isDefault?: boolean; // Whether this is the default payment method
+};
+
+export type TaxiDriver = TaxiUser & {
+  userType: "driver";
+  address?: string;
+  isActive?: boolean;
+  onDuty?: boolean;
+  licenseNumber: string;
+  status: TaxiDriverStatus;
+  experienceYears: string;
+  rating?: number;
+  joinedDate?: Timestamp;
+  isAllocator?: boolean;
+  isApprouved?: boolean;
+  vehicleType: VehicleType | "";
+  vehicleOptions: VehicleOptions | "";
+  vehicleColor: string;
+  vehicleNumber: string;
+  vehiclePassengers?: number;
+  currentLocation?: Coordinates & {
+    heading: number;
+  };
+  availableForRides?: boolean;
+  totalRides?: number;
+  totalEarnings?: number;
+};
+
+export type TaxiClient = TaxiUser & {
+  userType: "client";
+  currentLocation?: Coordinates;
+  favoriteLocations?: {
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+  }[];
+  paymentMethods?: PaymentMethod[];
+  totalRides?: number;
+  rating?: number;
+};
+
+export type RideStatus =
+  | "requested"
+  | "accepted"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
+
+export type Ride = {
+  id: string;
+  client: string;
+  driver: string;
+  status: RideStatus;
+  startLocation: Coordinates;
+  destinationLocation: Coordinates;
+  vehicleType: VehicleType | "";
+  vehicleOptions: VehicleOptions | "";
+  vehicleColor: string;
+  vehicleNumber: string;
+  vehiclePassengers?: number;
+  paymentMethod: PaymentMethod;
+  fare: number;
+  distance: number;
+  duration: number;
+  startTime?: Timestamp;
+  endTime?: Timestamp;
+  rating?: number;
+  feedback?: string;
 };

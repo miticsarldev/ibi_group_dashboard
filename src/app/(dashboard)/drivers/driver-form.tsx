@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Driver } from "@/types";
+import { TaxiDriver } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -39,22 +39,22 @@ import { useDropzone } from "react-dropzone";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 
-interface DriverFormProps {
-  driver?: Driver;
-  onSubmit: (driverData: Omit<Driver, "id">) => Promise<void>;
+interface TaxiDriverFormProps {
+  driver?: TaxiDriver;
+  onSubmit: (driverData: Omit<TaxiDriver, "id">) => Promise<void>;
   onCancel: () => void;
   isOpen: boolean;
 }
 
 const formSchema = z.object({
-  name: z.string().min(2, {
+  displayName: z.string().min(2, {
     message: "Le nom doit contenir au moins 2 caractères.",
   }),
   email: z.string().email({
     message: "Veuillez entrer une adresse email valide.",
   }),
   image: z.string().optional(),
-  phone: z.string().min(10, {
+  phoneNumber: z.string().min(10, {
     message: "Le numéro de téléphone doit contenir au moins 10 chiffres.",
   }),
   address: z.string().min(5, {
@@ -64,17 +64,23 @@ const formSchema = z.object({
     message: "Le numéro de permis doit contenir au moins 5 caractères.",
   }),
   status: z.enum(["Active", "Inactive", "Suspension"] as const),
-  experienceYears: z.number().min(0),
+  experienceYears: z.string(),
+  onDuty: z.boolean(),
   isActive: z.boolean(),
-  isAllocator: z.boolean(),
+  isApprouved: z.boolean(),
+  vehicleType: z.enum(["car", "bike"]),
+  vehicleOptions: z.enum(["IBI Electric", "Economique", "Premium"]),
+  vehicleColor: z.string(),
+  vehicleNumber: z.string(),
+  vehiclePassengers: z.number().min(0),
 });
 
-export function DriverForm({
+export function TaxiDriverForm({
   driver,
   onSubmit,
   onCancel,
   isOpen,
-}: DriverFormProps) {
+}: TaxiDriverFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(
     driver?.image || null
@@ -85,16 +91,22 @@ export function DriverForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: driver?.name || "",
+      displayName: driver?.displayName || "",
       email: driver?.email || "",
-      phone: driver?.phone || "",
+      phoneNumber: driver?.phoneNumber || "",
       address: driver?.address || "",
       licenseNumber: driver?.licenseNumber || "",
       status: driver?.status || "Active",
-      experienceYears: driver?.experienceYears || 0,
+      experienceYears: driver?.experienceYears || "0",
       isActive: driver?.isActive || true,
-      isAllocator: driver?.isAllocator || false,
       image: driver?.image || "",
+      onDuty: driver?.onDuty || false,
+      isApprouved: driver?.isApprouved || false,
+      vehicleType: driver?.vehicleType || "car",
+      vehicleOptions: driver?.vehicleOptions || "IBI Electric",
+      vehicleColor: driver?.vehicleColor || "",
+      vehicleNumber: driver?.vehicleNumber || "",
+      vehiclePassengers: driver?.vehiclePassengers || 0,
     },
   });
 
@@ -151,8 +163,11 @@ export function DriverForm({
         imageUrl = await uploadImageToImgBB(imageFile);
       }
 
-      const driverData: Omit<Driver, "id"> = {
+      const driverData: Omit<TaxiDriver, "id"> = {
         ...values,
+        onDuty: false,
+        userType: "driver", // add this property (or some other default value)
+        vehicleType: "",
         image: imageUrl,
         joinedDate: driver?.joinedDate || Timestamp.fromDate(new Date()),
       };
@@ -270,7 +285,7 @@ export function DriverForm({
             />
             <FormField
               control={form.control}
-              name="name"
+              name="displayName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Nom</FormLabel>
@@ -306,12 +321,12 @@ export function DriverForm({
             />
             <FormField
               control={form.control}
-              name="phone"
+              name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Téléphone</FormLabel>
                   <FormControl>
-                    <Input placeholder="+33 1 23 45 67 89" {...field} />
+                    <Input placeholder="+223 77 77 77 77" {...field} />
                   </FormControl>
                   <FormDescription>
                     Entrez le numéro de téléphone du chauffeur.
@@ -407,26 +422,6 @@ export function DriverForm({
             />
             <FormField
               control={form.control}
-              name="isAllocator"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Allocateur</FormLabel>
-                    <FormDescription>
-                      Cochez cette case si la personne est un allocateur.
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="isActive"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
@@ -437,11 +432,144 @@ export function DriverForm({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Actif</FormLabel>
+                    <FormLabel>Active</FormLabel>
                     <FormDescription>
-                      Cochez cette case si le chauffeur est actuellement actif.
+                      Cochez cette case si le chauffeur est actif.
                     </FormDescription>
                   </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="isApprouved"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Chauffeur approuvé ?</FormLabel>
+                    <FormDescription>
+                      Cochez cette case pour approuver un chauffeur pour
+                      qu&apos;il puisser utiliser l&apos;application de commande
+                      de taxi.
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehicleType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Type de vehicule</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un type de vehicule" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="car">Voiture</SelectItem>
+                      <SelectItem value="bike">Moto</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choisissez le type de vehicule que disposera le chauffeur.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehicleOptions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Statut</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez l'option du vehicule" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="IBI Electric">
+                        IBI Electrique
+                      </SelectItem>
+                      <SelectItem value="Economique">Economique</SelectItem>
+                      <SelectItem value="Premium">Premium</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choisissez une option de vehicule que dispose le chauffeur
+                    (IBI Electric, Economique, Premium).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehicleNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>La couleur du vehicule</FormLabel>
+                  <FormControl>
+                    <Input placeholder="CC 6666 DD" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Entrez le numéro de plaque du vehicule.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehicleColor"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>La couleur du vehicule</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Noir" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Entrez la couleur du vehicule.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vehiclePassengers"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>La couleur du vehicule</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={1}
+                      placeholder="Noir"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Entrez la couleur du vehicule.
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />

@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Driver } from "@/types";
+import { TaxiDriver } from "@/types";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Edit, Trash } from "lucide-react";
 import {
@@ -16,11 +16,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 type ExtendedTableMeta = {
-  onEdit: (driver: Driver) => void;
+  onEdit: (driver: TaxiDriver) => void;
   onDelete: (id: string) => void;
 };
 
-export const columns: ColumnDef<Driver>[] = [
+export const columns: ColumnDef<TaxiDriver>[] = [
   {
     accessorKey: "image",
     header: "Image",
@@ -29,9 +29,9 @@ export const columns: ColumnDef<Driver>[] = [
       return (
         <div className="flex items-center justify-center">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={driver.image} alt={driver.name} />
+            <AvatarImage src={driver.image} alt={driver.displayName} />
             <AvatarFallback className="bg-muted">
-              {driver.name
+              {driver.displayName
                 .split(" ")
                 .map((name) => name.charAt(0))
                 .join("")}
@@ -42,7 +42,7 @@ export const columns: ColumnDef<Driver>[] = [
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: "displayName",
     header: "Nom",
   },
   {
@@ -50,15 +50,15 @@ export const columns: ColumnDef<Driver>[] = [
     header: "Email",
   },
   {
-    accessorKey: "phone",
+    accessorKey: "phoneNumber",
     header: "Téléphone",
   },
   {
-    accessorKey: "isAllocator",
-    header: "Allocateur",
+    accessorKey: "isApprouved",
+    header: "Approuvé",
     cell: ({ row }) => {
-      const isAllocator = row.getValue("isAllocator");
-      return isAllocator ? (
+      const isApprouved = row.getValue("isApprouved");
+      return isApprouved ? (
         <Badge variant="default">Oui</Badge>
       ) : (
         <Badge variant="destructive">Non</Badge>
@@ -121,7 +121,7 @@ export const columns: ColumnDef<Driver>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(driver.id)}
+              onClick={() => navigator.clipboard.writeText(driver?.id ?? "")}
             >
               Copier l&apos;ID du chauffeur
             </DropdownMenuItem>
@@ -130,7 +130,7 @@ export const columns: ColumnDef<Driver>[] = [
               <Edit className="mr-2 h-4 w-4" />
               Modifier
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => meta.onDelete(driver.id)}>
+            <DropdownMenuItem onClick={() => meta.onDelete(driver.id ?? "")}>
               <Trash className="mr-2 h-4 w-4" />
               Supprimer
             </DropdownMenuItem>

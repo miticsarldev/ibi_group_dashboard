@@ -65,7 +65,7 @@ const mainMenuItems = [
       },
       {
         title: "Allocateurs",
-        url: "/drivers",
+        url: "/allocators",
         icon: Users,
       },
       {
@@ -100,7 +100,7 @@ const mainMenuItems = [
       },
       {
         title: "Conducteurs",
-        url: "/drivers-taxi",
+        url: "/drivers",
         icon: Users2,
       },
       {
@@ -108,7 +108,6 @@ const mainMenuItems = [
         url: "/passengers",
         icon: Users2,
       },
-
       {
         title: "Type de Documents",
         url: "/document-types",
@@ -126,7 +125,7 @@ const mainMenuItems = [
       },
       {
         title: "Revenue sur Transport",
-        url: "/revenues",
+        url: "/revenues-transport",
         icon: DollarSignIcon,
       },
     ],
@@ -177,7 +176,9 @@ export function AppSidebar() {
                     </div>
                     {!isCollapsed && (
                       <div className="flex flex-col items-start">
-                        <span className="text-sm font-medium">IBI Group</span>
+                        <span className="text-sm font-medium">
+                          IBI GROUP ANGATA
+                        </span>
                         <span className="text-xs text-zinc-400">
                           Enterprise
                         </span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Driver } from "@/types";
+import { Driver, TaxiDriver } from "@/types";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import {
@@ -13,13 +13,13 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "./columns";
 import { Loader } from "@/components/ui/loader";
-import { DriverForm } from "./driver-form";
+import { TaxiDriverForm } from "./driver-form";
 
 export default function DriversPage() {
-  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [drivers, setDrivers] = useState<TaxiDriver[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
+  const [editingDriver, setEditingDriver] = useState<TaxiDriver | null>(null);
 
   useEffect(() => {
     fetchDrivers();
@@ -28,7 +28,9 @@ export default function DriversPage() {
   const fetchDrivers = async () => {
     setIsLoading(true);
     try {
-      const fetchedDrivers = await listDocuments<Driver>("drivers");
+      const fetchedDrivers = await listDocuments<TaxiDriver>("taxi_drivers");
+      console.log(fetchedDrivers);
+
       setDrivers(fetchedDrivers);
     } catch (error) {
       console.error("Error fetching drivers:", error);
@@ -47,8 +49,11 @@ export default function DriversPage() {
     }
   };
 
-  const handleUpdateDriver = async (driverData: Omit<Driver, "id">) => {
+  const handleUpdateDriver = async (driverData: Omit<TaxiDriver, "id">) => {
     try {
+      if (!editingDriver!.id) {
+        throw new Error("Editing driver ID is missing");
+      }
       const updatedDriverData = { id: editingDriver!.id, ...driverData };
       await updateDocument("drivers", updatedDriverData);
       fetchDrivers();
@@ -65,6 +70,14 @@ export default function DriversPage() {
       fetchDrivers();
     } catch (error) {
       console.error("Error deleting driver:", error);
+    }
+  };
+
+  const handleSubmit = (driverData: Omit<TaxiDriver, "id">) => {
+    if (editingDriver) {
+      return handleUpdateDriver(driverData);
+    } else {
+      return handleCreateDriver(driverData as unknown as Omit<Driver, "id">);
     }
   };
 
@@ -94,9 +107,9 @@ export default function DriversPage() {
         />
       )}
       {isFormOpen && (
-        <DriverForm
+        <TaxiDriverForm
           driver={editingDriver!}
-          onSubmit={editingDriver ? handleUpdateDriver : handleCreateDriver}
+          onSubmit={handleSubmit}
           onCancel={() => {
             setIsFormOpen(false);
             setEditingDriver(null);

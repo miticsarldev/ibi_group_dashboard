@@ -28,7 +28,7 @@ export default function DriversPage() {
   const fetchDrivers = async () => {
     setIsLoading(true);
     try {
-      const fetchedDrivers = await listDocuments<Driver>("taxi_drivers");
+      const fetchedDrivers = await listDocuments<Driver>("drivers");
       setDrivers(fetchedDrivers);
     } catch (error) {
       console.error("Error fetching drivers:", error);
@@ -71,9 +71,7 @@ export default function DriversPage() {
   return (
     <div className="container mx-auto">
       <div className="flex justify-between items-center mb-5">
-        <h1 className="text-2xl font-bold">
-          Gestion des Allocateurs et Chauffeurs
-        </h1>
+        <h1 className="text-2xl font-bold">Gestion des Allocateurs</h1>
         <Button onClick={() => setIsFormOpen(true)}>
           <PlusCircle className="mr-2 h-4 w-4" /> Ajouter un Allocateur
         </Button>

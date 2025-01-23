@@ -178,7 +178,9 @@ export function VehicleForm({
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Véhicule électrique (IBI GROUP)</FormLabel>
+                    <FormLabel>
+                      Véhicule électrique (IBI GROUP ANGATA)
+                    </FormLabel>
                     <FormDescription>
                       Cochez cette case si le véhicule est électrique.
                     </FormDescription>

@@ -81,7 +81,7 @@ export default function LoginPage() {
       <div className="w-full md:w-1/2 p-6 md:p-12 flex items-center justify-center bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="flex items-center gap-2 text-ibi-color-1">
-            <span className="text-4xl font-bold">IBI Group</span>
+            <span className="text-4xl font-bold">IBI GROUP ANGATA</span>
             <CarIcon size={40} /> <BikeIcon size={40} />
           </div>
 
